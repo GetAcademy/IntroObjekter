@@ -8,64 +8,119 @@
 </head>
 
 <body>
-    <h1>Pause til 10:37</h1>
+    <h1>Pause til 11:05</h1>
     <div id="app"></div>
     <script>
         // model
-        let color = { red: 200, green: 50, blue: 100 };
-        
-        // let color2 = invertColor(color1);
-        // setColor(color2);
+        let model = {
+            color1: { red: 200, green: 50, blue: 100 },
+            // color2: { red: 255, green: 255, blue: 255 },
+            // color3: { red: 0, green: 50, blue: 100 },
+        };
+
 
         // view
-        updateView();
+        init();
         function updateView() {
-            let textColor = invertColor(color);
             document.getElementById('app').innerHTML = /*HTML*/`
                 <h1>Leke med farger</h1>
-
-                <button>a</button>
-                <button>b</button>
+                <h1 
+                    style="background-color: 
+                        ${getColorAsStyleValue(model.color2)}">
+                    Mellomfarge
+                </h1>
+                ${createGradientHtml()}
 
                 <br/>
-                ${createSliderHtml('Rød', 'red')}
-                ${createSliderHtml('Grønn', 'green')}
-                ${createSliderHtml('Blå', 'blue')}
+                ${createSlidersHtml('color1')}
+                ${createSlidersHtml('color2')}
+                ${createSlidersHtml('color3')}
 
             `;
             const style = document.body.style;
             style.backgroundColor = getColorAsStyleValue(color);
             style.color = getColorAsStyleValue(textColor);
-
         }
 
-        function createSliderHtml(label, fieldName){
+        function createGradientHtml() {
+            let color2 = { red: 0, green: 0, blue: 0 };
+            let html = '';
+            let colors = getColorGradient(color, color2);
+            for (let color of colors) {
+                html += /*HTML*/`
+                    <div style="background-color: 
+                        ${getColorAsStyleValue(color)}">
+                        A                        
+                    </div>
+                `;
+            }
+            return html;
+        }
+
+        function createSlidersHtml(modelFieldName) {
+            return createSliderHtml('Rød', 'red');
+            + createSliderHtml('Grønn', 'green')
+                + createSliderHtml('Blå', 'blue');
+        }
+
+        function createSliderHtml(label, fieldName, modelFieldName) {
             return /*HTML*/`
-                ${label}: <br/>
+                ${modelFieldName}.${label}: <br/>
                 <input 
                     type="range" 
                     min="0" max="255" step="1" 
-                    value="${color[fieldName]}"
-                    onchange="color.${fieldName} = this.valueAsNumber; updateView()"
+                    value="${model[modelFieldName][fieldName]}"
+                    onchange="model.${modelFieldName}.${fieldName} = this.valueAsNumber; updateView()"
                     />
                 <br/>            
             `;
         }
 
-        function getColorAsStyleValue(color){
+        function getColorAsStyleValue(color) {
             return `rgb(${color.red}, ${color.green}, ${color.blue})`;
         }
 
-        function invertColor(color){
-            return { 
-                red: 255 - color.red, 
-                green: 255 - color.green, 
-                blue: 255 - color.blue, 
+        function invertColor(color) {
+            return {
+                red: 255 - color.red,
+                green: 255 - color.green,
+                blue: 255 - color.blue,
             };
         }
 
-        // controller
+        function getColorGradient(color1, color2) {
+            let changeRed = (color2.red - color1.red) / 9;
+            let changeGreen = (color2.green - color1.green) / 9;
+            let changeBlue = (color2.blue - color1.blue) / 9;
+            let colors = [];
+            for (let i = 0; i < 10; i++) {
+                colors.push({
+                    red: color1.red + i * changeRed,
+                    green: color1.green + i * changeGreen,
+                    blue: color1.blue + i * changeBlue,
+                })
+            }
+            return colors;
+        }
 
+        function getMiddleColor(color1, color2) {
+            return {
+                red: getAverage(color1.red, color2.red),
+                green: getAverage(color1.green, color2.green),
+                blue: getAverage(color1.blue, color2.blue),
+            };
+        }
+
+        function getAverage(value1, value2) {
+            return Math.floor((value1 + value2) / 2)
+        }
+
+        // controller
+        function init() {
+            model.color2 = invertColor(model.color1);
+            model.color3 = getMiddleColor(model.color1, model.color2);
+            updateView();
+        }
     </script>
 </body>
 
