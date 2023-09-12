@@ -8,7 +8,6 @@
 </head>
 
 <body>
-    <h1>Pause til 11:05</h1>
     <div id="app"></div>
     <script>
         // model
@@ -32,10 +31,11 @@
                 ${createGradientHtml()}
 
                 <br/>
-                ${createSlidersHtml('color1')}
-                ${createSlidersHtml('color2')}
-                ${createSlidersHtml('color3')}
-
+                <div style="display: flex; flex-direction: row; justify-content: space-evenly">
+                    ${createSlidersHtml('color1')}
+                    ${createSlidersHtml('color2')}
+                    ${createSlidersHtml('color3')}
+                </div>
             `;
             const style = document.body.style;
             style.backgroundColor = getColorAsStyleValue(model.color1);
@@ -57,9 +57,11 @@
         }
 
         function createSlidersHtml(modelFieldName) {
-            return createSliderHtml('Rød', 'red', modelFieldName)
+            return '<div>'
+                + createSliderHtml('Rød', 'red', modelFieldName)
                 + createSliderHtml('Grønn', 'green', modelFieldName)
-                + createSliderHtml('Blå', 'blue', modelFieldName);
+                + createSliderHtml('Blå', 'blue', modelFieldName)
+                + '</div>';
         }
 
         function createSliderHtml(label, fieldName, modelFieldName) {
